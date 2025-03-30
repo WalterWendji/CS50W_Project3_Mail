@@ -1,12 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-/* 
-  fetch('/emails/sent')
-  .then(response => response.json())
-  .then(emails => {
-    console.log("emails")
-    console.log(emails)
-  }) */
- 
 
   // Use buttons to toggle between views
   document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
@@ -39,23 +31,58 @@ function load_mailbox(mailbox) {
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
-  
-  if (mailbox == 'sent') {
+  if (mailbox === 'inbox') {
+
+    fetch('/emails/inbox') 
+    .then(response => response.json())
+    .then(mails_from_inbox => {
+      if (mails_from_inbox.length === 0) {
+
+        const message_element = document.createElement('h4')
+        message_element.innerText = "No Messages!"
+        document.querySelector("#emails-view").append(message_element)
+
+      } else {
+
+        const ul_element = document.createElement('ul')
+        mails_from_inbox.forEach((mail) => {
+          const li_element = document.createElement('li')
+          li_element.innerHTML = `${mail.sender} ${mail.subject} ${mail.timestamp}`
+          ul_element.append(li_element)
+        })
+        document.querySelector("#emails-view").append(ul_element)
+      }
+    })
+
+  } else if (mailbox === 'sent') {
 
     const ul_element = document.createElement('ul')
 
     fetch('/emails/sent')
     .then(response => response.json())
-    .then(emails => {
-      emails.forEach((mail)=> {
-        const li_element = document.createElement('li')
-        li_element.innerHTML = `${mail.sender} ${mail.subject} ${mail.timestamp}`  
-        ul_element.append(li_element)
-      })
+    .then(sent_emails => {
+      if (sent_emails.length === 0) {
+
+        const message_element = document.createElement('h4')
+        message_element.innerText = "No Messages!"
+        document.querySelector("#emails-view").append(message_element)
+
+      } else {
+        sent_emails.forEach((mail)=> {
+          const li_element = document.createElement('li')
+          li_element.innerHTML = `${mail.sender} ${mail.subject} ${mail.timestamp}`  
+          ul_element.append(li_element)
+        })
+      }
     })
+    
 
     document.querySelector('#emails-view').append(ul_element)
+
+  } else if (mailbox === 'archive') {
+
   }
+  
 }
 
 function send_mail() {
@@ -70,6 +97,7 @@ function send_mail() {
   })
   .then(response => response.json())
   .then(result => {
+
     load_mailbox('sent');
     console.log("hier is the result!");
     console.log(result);
