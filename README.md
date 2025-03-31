@@ -7,7 +7,7 @@ Using JavaScript, HTML, and CSS, complete the implementation of your single-page
 - [x] **Send Mail**: When a user submits the email composition form, add JavaScript code to actually send the email.
 	- [x] You’ll likely want to make a `POST` request to `/emails`, passing in values for `recipients`, `subject`, and `body`.
     - [x] Once the email has been sent, load the user’s sent mailbox.
-- [ ] **Mailbox**: When a user visits their Inbox, Sent mailbox, or Archive, load the appropriate mailbox.
+- [x] **Mailbox**: When a user visits their Inbox, Sent mailbox, or Archive, load the appropriate mailbox.
 	- [x] You’ll likely want to make a `GET` request to `/emails/<mailbox>` to request the emails for a particular mailbox.
     - [x] When a mailbox is visited, the application should first query the API for the latest emails in that mailbox.
     - [x] When a mailbox is visited, the name of the mailbox should appear at the top of the page (this part is done for you).
