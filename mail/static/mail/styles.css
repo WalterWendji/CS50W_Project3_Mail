@@ -1,3 +1,27 @@
 textarea {
     min-height: 400px;
 }
+
+li {
+    list-style: none;
+}
+
+.inbox-mail {
+    display: flex;
+    padding: 6px 4px;
+    border: 1px solid black;
+    justify-content: space-between;
+}
+
+.sender {
+    font-weight: 700;
+    padding-right: 6px;
+}
+
+.subject {
+    font-weight:500;
+}
+
+.timestamp {
+    color: gray;
+}
