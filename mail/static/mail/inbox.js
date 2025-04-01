@@ -41,7 +41,7 @@ function load_mailbox(mailbox) {
     load_sentbox(mailbox);
 
   } else if (mailbox === 'archive') {
-    load_archivebox();
+    load_archivebox(mailbox);
   }
 
   observe_change()
@@ -50,7 +50,7 @@ function load_mailbox(mailbox) {
 
 function load_inbox(mailbox) {
 
-  fetch('/emails/inbox')
+  fetch(`/emails/${mailbox}`)
     .then(response => response.json())
     .then(mails_from_inbox => {
       if (mails_from_inbox.length === 0) {
@@ -67,7 +67,7 @@ function load_inbox(mailbox) {
 
 function load_sentbox(mailbox) {
 
-  fetch('/emails/sent')
+  fetch(`/emails/${mailbox}`)
     .then(response => response.json())
     .then(sent_emails => {
       if (sent_emails.length === 0) {
@@ -84,8 +84,20 @@ function load_sentbox(mailbox) {
 
 }
 
-function load_archivebox() {
+function load_archivebox(mailbox) {
+  fetch(`/emails/${mailbox}`)
+    .then(response => response.json())
+    .then(archived_emails => {
+      if (archived_emails.length === 0) {
 
+        const message_element = document.createElement('h4')
+        message_element.innerText = "No Messages archived!"
+        document.querySelector("#emails-view").append(message_element)
+
+      } else {
+        create_and_style_email(archived_emails, mailbox);
+      }
+    })
 }
 
 function create_and_style_email(mails_list, mailbox) {
@@ -156,10 +168,13 @@ function load_email_by_id(mail_id) {
       <span> <strong>Subject: </strong> ${email.subject} </span>
       <span> <strong>Timestamp: </strong> ${email.timestamp} </span>
       <button> Reply </button>
+      <button class="archive-mail"> Archive </button>
       <hr>
       <p>${email.body} </p>
       `
       document.querySelector('#emails-view').append(mail_container)
+      const archive = document.querySelector('.archive-mail')
+      archive_and_unarchive_the_mail(archive, mail_id)
       console.log(email)
     })
 }
@@ -172,6 +187,20 @@ function change_the_read_status_of_mail(mail_id) {
     body: JSON.stringify({
       read: true
     })
+  })
+}
+
+function archive_and_unarchive_the_mail(archive, mail_id) {
+  archive.addEventListener('click', ()=> {
+    fetch(`/emails/${mail_id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        archived: true
+      })
+    })
+    console.log("That works!!")
+    document.querySelector('.mail-container').style.display = "none";
+    load_mailbox("inbox")
   })
 }
 
