@@ -1,3 +1,6 @@
+body {
+    /* background-color: gray; */
+}
 textarea {
     min-height: 400px;
 }
@@ -6,11 +9,21 @@ li {
     list-style: none;
 }
 
-.inbox-mail {
+.mail-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.mail-container button {
+    width: fit-content;
+}
+
+.box-mail {
     display: flex;
     padding: 6px 4px;
     border: 1px solid black;
     justify-content: space-between;
+    cursor: pointer;
 }
 
 .sender {
