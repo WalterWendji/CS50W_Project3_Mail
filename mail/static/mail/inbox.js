@@ -95,19 +95,19 @@ function create_and_style_email(mails_list, mailbox) {
 
     const li_element = document.createElement('li')
     li_element.innerHTML = `
-            <div class="box-mail" id=${mail.id} ${mail.read ? "style='background-color: gray; color: white'" : "style='background-color: white'"}>
-              <div> 
-              ${(() => {
-        if (mailbox === "sent") {
-          return `<span class="sender">${mail.recipients}</span>`
-        } else {
-          return `<span class="sender">${mail.sender}</span>`
-        }
-      })()}
-                <span class="subject">${mail.subject}</span>
-              </div>
-              <span class="timestamp" ${mail.read ? "style='color: white'" : ''}>${mail.timestamp}</span>
-            </div>
+        <div class="box-mail" id=${mail.id} ${mail.read ? "style='background-color: gray; color: white'" : "style='background-color: white'"}>
+          <div> 
+            ${(() => {
+              if (mailbox === "sent") {
+                return `<span class="sender">${mail.recipients}</span>`
+              } else {
+                return `<span class="sender">${mail.sender}</span>`
+              }
+            })()}
+            <span class="subject">${mail.subject}</span>
+          </div>
+          <span class="timestamp" ${mail.read ? "style='color: white'" : ''}>${mail.timestamp}</span>
+        </div>
             `
     ul_element.append(li_element)
     ul_element.classList.add('mail_lists')
@@ -119,19 +119,18 @@ function create_and_style_email(mails_list, mailbox) {
 function observe_change() {
   const observer = new MutationObserver((mutationsList) => {
     const box_mail = document.querySelectorAll('.box-mail')
-
     mutationsList.forEach((mutation) => {
       if (box_mail) {
         console.log("the element exist now!!")
         console.log(box_mail)
         box_mail.forEach((box) => {
-          box.addEventListener('click', (event) => {
-            if (event.target === box) {
-              console.log("has been clicked!!")
-              document.querySelector('.mail_lists').style.display = "none";
-              load_email_by_id(event.target.id)
-              change_the_read_status_of_mail(event.target.id)
-            }
+          box.addEventListener('click', () => {
+            console.log("id of this element ", box.id)
+            console.log("has been clicked!!")
+            document.querySelector('.mail_lists').style.display = "none";
+            load_email_by_id(box.id)
+            change_the_read_status_of_mail(box.id)
+            
           })
         })
 
@@ -168,10 +167,10 @@ function load_email_by_id(mail_id) {
 //once clicked on a mail in the inbox view, 
 // change the status of message to read=true
 function change_the_read_status_of_mail(mail_id) {
-  fetch(`/emails/${mail_id}`,{
+  fetch(`/emails/${mail_id}`, {
     method: 'PUT',
     body: JSON.stringify({
-      read:true
+      read: true
     })
   })
 }
