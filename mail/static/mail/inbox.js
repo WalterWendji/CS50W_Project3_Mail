@@ -44,7 +44,7 @@ function load_mailbox(mailbox) {
     load_archivebox(mailbox);
   }
 
-  observe_change()
+  observe_change(mailbox)
 
 }
 
@@ -128,10 +128,11 @@ function create_and_style_email(mails_list, mailbox) {
 
 }
 
-function observe_change() {
+function observe_change(mailbox) {
   const observer = new MutationObserver((mutationsList) => {
     const box_mail = document.querySelectorAll('.box-mail')
     mutationsList.forEach((mutation) => {
+      
       if (box_mail) {
         console.log("the element exist now!!")
         console.log(box_mail)
@@ -140,25 +141,25 @@ function observe_change() {
             console.log("id of this element ", box.id)
             console.log("has been clicked!!")
             document.querySelector('.mail_lists').style.display = "none";
-            load_email_by_id(box.id)
+            load_email_by_id(mailbox, box.id)
             change_the_read_status_of_mail(box.id)
             
           })
         })
 
-        observer.disconnect()
       }
     });
+    observer.disconnect();
   });
 
   observer.observe(document.body, { childList: true, subtree: true });
 }
 
 
-function load_email_by_id(mail_id) {
+function load_email_by_id(mailbox, mail_id, interactions_btns) {
   const mail_container = document.createElement('div')
   mail_container.classList.add('mail-container')
-
+ 
   fetch(`/emails/${mail_id}`)
     .then(response => response.json())
     .then(email => {
@@ -167,14 +168,16 @@ function load_email_by_id(mail_id) {
       <span> <strong>To: </strong> ${email.recipients} </span>
       <span> <strong>Subject: </strong> ${email.subject} </span>
       <span> <strong>Timestamp: </strong> ${email.timestamp} </span>
-      <button> Reply </button>
-      <button class="archive-mail"> Archive </button>
+      <div class="interactions-btns">
+        <button> Reply </button>
+      </div>
       <hr>
       <p>${email.body} </p>
       `
       document.querySelector('#emails-view').append(mail_container)
-      const archive = document.querySelector('.archive-mail')
-      archive_and_unarchive_the_mail(archive, mail_id)
+      if (mailbox !== "sent") {
+        archive_and_unarchive_the_mail(mail_id)
+      }
       console.log(email)
     })
 }
@@ -190,7 +193,14 @@ function change_the_read_status_of_mail(mail_id) {
   })
 }
 
-function archive_and_unarchive_the_mail(archive, mail_id) {
+function archive_and_unarchive_the_mail(mail_id) {
+  const archive_btn = document.createElement('button')
+  archive_btn.textContent = "Archive"
+  archive_btn.classList.add('archive-mail')
+  document.querySelector('.interactions-btns').append(archive_btn)
+
+  const archive = document.querySelector('.archive-mail')
+  
   archive.addEventListener('click', ()=> {
     fetch(`/emails/${mail_id}`, {
       method: 'PUT',
@@ -198,7 +208,7 @@ function archive_and_unarchive_the_mail(archive, mail_id) {
         archived: true
       })
     })
-    console.log("That works!!")
+    
     document.querySelector('.mail-container').style.display = "none";
     load_mailbox("inbox")
   })
