@@ -109,13 +109,7 @@ function create_and_style_email(mails_list, mailbox) {
     li_element.innerHTML = `
         <div class="box-mail" id=${mail.id} ${mail.read ? "style='background-color: gray; color: white'" : "style='background-color: white'"}>
           <div> 
-            ${(() => {
-              if (mailbox === "sent") {
-                return `<span class="sender">${mail.recipients}</span>`
-              } else {
-                return `<span class="sender">${mail.sender}</span>`
-              }
-            })()}
+           <span class="sender">${mailbox === "sent" ? mail.recipients : mail.sender}</span>
             <span class="subject">${mail.subject}</span>
           </div>
           <span class="timestamp" ${mail.read ? "style='color: white'" : ''}>${mail.timestamp}</span>
@@ -132,7 +126,7 @@ function observe_change(mailbox) {
   const observer = new MutationObserver((mutationsList) => {
     const box_mail = document.querySelectorAll('.box-mail')
     mutationsList.forEach((mutation) => {
-      
+
       if (box_mail) {
         console.log("the element exist now!!")
         console.log(box_mail)
@@ -143,7 +137,7 @@ function observe_change(mailbox) {
             document.querySelector('.mail_lists').style.display = "none";
             load_email_by_id(mailbox, box.id)
             change_the_read_status_of_mail(box.id)
-            
+
           })
         })
 
@@ -159,7 +153,7 @@ function observe_change(mailbox) {
 function load_email_by_id(mailbox, mail_id) {
   const mail_container = document.createElement('div')
   mail_container.classList.add('mail-container')
- 
+
   fetch(`/emails/${mail_id}`)
     .then(response => response.json())
     .then(email => {
@@ -201,18 +195,21 @@ function archive_and_unarchive_the_mail(mailbox, mail_id) {
 
   const archive = document.querySelector('.archive-mail')
 
-    archive.addEventListener('click', ()=> {
-      fetch(`/emails/${mail_id}`, {
-        method: 'PUT',
-        body: JSON.stringify({
-          archived: mailbox === "inbox" ? true : false
-        })
+  archive.addEventListener('click', () => {
+    fetch(`/emails/${mail_id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        archived: mailbox === "inbox" ? true : false
       })
-  
-      document.querySelector('.mail-container').style.display = "none";
-      load_mailbox("inbox")
+
     })
- 
+      .then(()=> {
+        document.querySelector('.mail-container').style.display = "none";
+        load_mailbox('inbox')
+      })
+
+  })
+
 }
 
 function send_mail() {
