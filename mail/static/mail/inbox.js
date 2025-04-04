@@ -63,6 +63,9 @@ function load_inbox(mailbox) {
         create_and_style_email(mails_from_inbox, mailbox);
       }
     })
+    .catch(error => {
+      console.log('Error in the load_inbox() method:', error);
+    });
 }
 
 function load_sentbox(mailbox) {
@@ -80,6 +83,9 @@ function load_sentbox(mailbox) {
         create_and_style_email(sent_emails, mailbox);
       }
     })
+    .catch(error => {
+      console.log('Error in the load_sentbox() method:', error);
+    });
 
 
 }
@@ -98,6 +104,9 @@ function load_archivebox(mailbox) {
         create_and_style_email(archived_emails, mailbox);
       }
     })
+    .catch(error => {
+      console.log('Error in the load_archivebox() method:', error);
+    });
 }
 
 function create_and_style_email(mails_list, mailbox) {
@@ -109,7 +118,7 @@ function create_and_style_email(mails_list, mailbox) {
     li_element.innerHTML = `
         <div class="box-mail" id=${mail.id} ${mail.read ? "style='background-color: gray; color: white'" : "style='background-color: white'"}>
           <div> 
-           <span class="sender">${mailbox === "sent" ? mail.recipients : mail.sender}</span>
+           <span class="sender_or_recipients">${mailbox === "sent" ? mail.recipients : mail.sender}</span>
             <span class="subject">${mail.subject}</span>
           </div>
           <span class="timestamp" ${mail.read ? "style='color: white'" : ''}>${mail.timestamp}</span>
@@ -163,17 +172,21 @@ function load_email_by_id(mailbox, mail_id) {
       <span> <strong>Subject: </strong> ${email.subject} </span>
       <span> <strong>Timestamp: </strong> ${email.timestamp} </span>
       <div class="interactions-btns">
-        <button> Reply </button>
+        <button class="reply-this-mail"> Reply </button>
       </div>
       <hr>
-      <p>${email.body} </p>
+      <p class="mail-body">${email.body} </p>
       `
       document.querySelector('#emails-view').append(mail_container)
       if (mailbox !== "sent") {
         archive_and_unarchive_the_mail(mailbox, mail_id)
       }
+      reply_a_mail(mail_id, mailbox)
       console.log(email)
     })
+    .catch(error => {
+      console.log('Error in the load_mail_by_id() method:', error);
+    });
 }
 
 //once clicked on a mail in the inbox view, 
@@ -207,6 +220,9 @@ function archive_and_unarchive_the_mail(mailbox, mail_id) {
         document.querySelector('.mail-container').style.display = "none";
         load_mailbox('inbox')
       })
+      .catch(error => {
+        console.log('Error in the archive_and_unarchive_the_mail() method:', error);
+      });
 
   })
 
@@ -230,9 +246,30 @@ function send_mail() {
       console.log(result);
     })
     .catch(error => {
-      console.log('Error:', error);
+      console.log('Error in the send_mail() method:', error);
     });
 
   return false;
 }
 
+function reply_a_mail(mail_id, mailbox) {
+  document.querySelector('.reply-this-mail').addEventListener('click', ()=> {
+    compose_email()
+    const sender = document.querySelector('#compose-recipients')
+    const subject = document.querySelector('#compose-subject')
+    const mail_body = document.querySelector('#compose-body')
+  
+    fetch(`/emails/${mail_id}`)
+    .then(response => response.json())
+    .then(email => {
+      sender.value = mailbox === "sent" ? email.recipients : email.sender
+      subject.value = `${(email.subject).includes("Re: ") ? email.subject: `Re: ${email.subject}`}`
+      mail_body.value = `\n"${email.timestamp} ${email.sender} wrote:"  \n\t${email.body}`
+      mail_body.setAttribute("autofocus", "")
+    })
+    .catch(error => {
+      console.log('Error in the reply_a_mail() method:', error);
+    });
+
+  }) 
+}

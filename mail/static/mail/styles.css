@@ -27,7 +27,7 @@ li {
     cursor: pointer;
 }
 
-.sender {
+.sender_or_recipients {
     font-weight: 700;
     padding-right: 6px;
 }
