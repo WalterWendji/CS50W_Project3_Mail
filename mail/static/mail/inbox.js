@@ -6,10 +6,26 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
   document.querySelector('#compose').addEventListener('click', compose_email);
   document.querySelector('#compose-form').onsubmit = send_mail;
+  
+  console.log("The active url:", getCurrentURL());
+  style_body(getCurrentURL());
 
   // By default, load the inbox
   load_mailbox('inbox');
 });
+
+
+function getCurrentURL () {
+  return window.location.href
+}
+
+function style_body(url) {
+  if(url === "http://127.0.0.1:8000/") {
+    document.querySelector('body').style.backgroundColor = "gray";
+    document.querySelector('body').style.color = "white";
+    console.log("style body")
+  }
+}
 
 function compose_email() {
 
@@ -31,6 +47,8 @@ function load_mailbox(mailbox) {
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+  
+  switch_background_color_between_buttons(mailbox)
 
   if (mailbox === 'inbox') {
 
@@ -48,8 +66,15 @@ function load_mailbox(mailbox) {
 
 }
 
-function load_inbox(mailbox) {
+function switch_background_color_between_buttons(mailbox) {
 
+  document.querySelectorAll('.mailbox-button').forEach(button => {
+    button.classList.toggle('active', button.id === mailbox)
+  })
+
+}
+
+function load_inbox(mailbox) {
   fetch(`/emails/${mailbox}`)
     .then(response => response.json())
     .then(mails_from_inbox => {
@@ -116,12 +141,12 @@ function create_and_style_email(mails_list, mailbox) {
 
     const li_element = document.createElement('li')
     li_element.innerHTML = `
-        <div class="box-mail" id=${mail.id} ${mail.read ? "style='background-color: gray; color: white'" : "style='background-color: white'"}>
+        <div class="box-mail" id=${mail.id} ${mail.read ? "style='background-color: gray; color: white; font-weight: 500'" : "style='background-color: white; color: black; font-weight: 700'"}>
           <div> 
            <span class="sender_or_recipients">${mailbox === "sent" ? mail.recipients : mail.sender}</span>
             <span class="subject">${mail.subject}</span>
           </div>
-          <span class="timestamp" ${mail.read ? "style='color: white'" : ''}>${mail.timestamp}</span>
+          <span class="timestamp">${mail.timestamp}</span>
         </div>
             `
     ul_element.append(li_element)
@@ -172,7 +197,7 @@ function load_email_by_id(mailbox, mail_id) {
       <span> <strong>Subject: </strong> ${email.subject} </span>
       <span> <strong>Timestamp: </strong> ${email.timestamp} </span>
       <div class="interactions-btns">
-        <button class="reply-this-mail"> Reply </button>
+        <button class="btn btn-sm btn-outline-primary reply-this-mail"> Reply </button>
       </div>
       <hr>
       <p class="mail-body">${email.body} </p>
@@ -203,7 +228,7 @@ function change_the_read_status_of_mail(mail_id) {
 function archive_and_unarchive_the_mail(mailbox, mail_id) {
   const archive_btn = document.createElement('button')
   archive_btn.textContent = `${mailbox === "inbox" ? "Archive" : "Unarchive"}`
-  archive_btn.classList.add('archive-mail')
+  archive_btn.classList.add('archive-mail', 'btn', 'btn-outline-primary', 'btn-sm')
   document.querySelector('.interactions-btns').append(archive_btn)
 
   const archive = document.querySelector('.archive-mail')
@@ -262,9 +287,9 @@ function reply_a_mail(mail_id, mailbox) {
     fetch(`/emails/${mail_id}`)
     .then(response => response.json())
     .then(email => {
-      sender.value = mailbox === "sent" ? email.recipients : email.sender
+      sender.value = mailbox === "sent" ? email.recipients : email.sender //if the user want to reply its own message he sent he can do!
       subject.value = `${(email.subject).includes("Re: ") ? email.subject: `Re: ${email.subject}`}`
-      mail_body.value = `\n"${email.timestamp} ${email.sender} wrote:"  \n\t${email.body}`
+      mail_body.value = `\n"On ${email.timestamp} ${email.sender} wrote:"  \n\t${email.body}`
       mail_body.setAttribute("autofocus", "")
     })
     .catch(error => {

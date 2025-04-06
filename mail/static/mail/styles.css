@@ -19,23 +19,62 @@ li {
     width: fit-content;
 }
 
+.mail_lists {
+    padding-left: 0;
+}
+
 .box-mail {
     display: flex;
-    padding: 6px 4px;
-    border: 1px solid black;
+    padding: 10px 6px;
+    /* border: 1px solid black; */
+    border-bottom: 1px solid white;
     justify-content: space-between;
     cursor: pointer;
 }
 
 .sender_or_recipients {
-    font-weight: 700;
+    
     padding-right: 6px;
 }
 
-.subject {
-    font-weight:500;
+.timestamp {
+    padding-right: 6px;
 }
 
-.timestamp {
-    color: gray;
+#send-mail {
+    margin-top: 10px;
+    margin-bottom: 10px
 }
+
+.btn:hover{
+    background-color: #20c997;
+    border-color: #20c997;
+}
+
+.btn-outline-primary {
+    color: #20c997;
+    border-color: #20c997;
+}
+
+.btn:active {
+    background-color: #20c997;
+    border-color: #20c997;
+}
+
+.btn-outline-primary:active {
+    background-color: white;
+}
+
+.btn-sm:active {
+    background-color: white;
+}
+
+.mailbox-button {
+    background-color: transparent;
+    color: #20c997;
+}
+  
+.mailbox-button.active {
+    background-color: #20c997;
+    color: white;
+  }
