@@ -3,11 +3,10 @@
 
 {% block body %}
     <h2 class="test">{{ request.user.email }}</h2>
-
     <button class="btn btn-sm btn-outline-primary mailbox-button" id="inbox">Inbox</button>
     <button class="btn btn-sm btn-outline-primary mailbox-button" id="compose">Compose</button>
     <button class="btn btn-sm btn-outline-primary mailbox-button" id="sent">Sent</button>
-    <button class="btn btn-sm btn-outline-primary mailbox-button" id="archived">Archived</button>
+    <button class="btn btn-sm btn-outline-primary mailbox-button" id="archive">Archived</button>
     <a class="btn btn-sm btn-outline-primary" href="{% url 'logout' %}">Log Out</a>
     <hr>
 

@@ -3,11 +3,10 @@ document.addEventListener('DOMContentLoaded', function () {
   // Use buttons to toggle between views
   document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
   document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
-  document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
+  document.querySelector('#archive').addEventListener('click', () => load_mailbox('archive'));
   document.querySelector('#compose').addEventListener('click', compose_email);
   document.querySelector('#compose-form').onsubmit = send_mail;
   
-  console.log("The active url:", getCurrentURL());
   style_body(getCurrentURL());
 
   // By default, load the inbox
@@ -19,6 +18,7 @@ function getCurrentURL () {
   return window.location.href
 }
 
+//apply a style of the body off all pages except the login and logout page
 function style_body(url) {
   if(url === "http://127.0.0.1:8000/") {
     document.querySelector('body').style.backgroundColor = "gray";
@@ -28,6 +28,7 @@ function style_body(url) {
 }
 
 function compose_email() {
+  switch_background_color_between_buttons('compose')
 
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
@@ -112,7 +113,6 @@ function load_sentbox(mailbox) {
       console.log('Error in the load_sentbox() method:', error);
     });
 
-
 }
 
 function load_archivebox(mailbox) {
@@ -156,18 +156,19 @@ function create_and_style_email(mails_list, mailbox) {
 
 }
 
+
+//check any changes on the body element and its children.
+//check if any node have been added or not
 function observe_change(mailbox) {
   const observer = new MutationObserver((mutationsList) => {
     const box_mail = document.querySelectorAll('.box-mail')
     mutationsList.forEach((mutation) => {
 
       if (box_mail) {
-        console.log("the element exist now!!")
-        console.log(box_mail)
+        
         box_mail.forEach((box) => {
           box.addEventListener('click', () => {
-            console.log("id of this element ", box.id)
-            console.log("has been clicked!!")
+            
             document.querySelector('.mail_lists').style.display = "none";
             load_email_by_id(mailbox, box.id)
             change_the_read_status_of_mail(box.id)
@@ -183,7 +184,7 @@ function observe_change(mailbox) {
   observer.observe(document.body, { childList: true, subtree: true });
 }
 
-
+//show the mail content, if clicked on a email
 function load_email_by_id(mailbox, mail_id) {
   const mail_container = document.createElement('div')
   mail_container.classList.add('mail-container')
@@ -203,11 +204,12 @@ function load_email_by_id(mailbox, mail_id) {
       <p class="mail-body">${email.body} </p>
       `
       document.querySelector('#emails-view').append(mail_container)
+
       if (mailbox !== "sent") {
         archive_and_unarchive_the_mail(mailbox, mail_id)
       }
       reply_a_mail(mail_id, mailbox)
-      console.log(email)
+
     })
     .catch(error => {
       console.log('Error in the load_mail_by_id() method:', error);
@@ -279,6 +281,7 @@ function send_mail() {
 
 function reply_a_mail(mail_id, mailbox) {
   document.querySelector('.reply-this-mail').addEventListener('click', ()=> {
+    
     compose_email()
     const sender = document.querySelector('#compose-recipients')
     const subject = document.querySelector('#compose-subject')

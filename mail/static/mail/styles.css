@@ -46,27 +46,27 @@ li {
     margin-bottom: 10px
 }
 
-.btn:hover{
+.subject {
+    padding-left: 30px;
+}
+
+
+.btn:hover, .btn:active{
     background-color: #20c997;
     border-color: #20c997;
 }
+
 
 .btn-outline-primary {
     color: #20c997;
     border-color: #20c997;
 }
 
-.btn:active {
+
+.btn-outline-primary:not(:disabled):not(.disabled).active, .btn-outline-primary:not(:disabled):not(.disabled):active, .show>.btn-outline-primary.dropdown-toggle {
+    color: #fff;
     background-color: #20c997;
     border-color: #20c997;
-}
-
-.btn-outline-primary:active {
-    background-color: white;
-}
-
-.btn-sm:active {
-    background-color: white;
 }
 
 .mailbox-button {
